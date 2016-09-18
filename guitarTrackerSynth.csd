@@ -8,76 +8,17 @@ ksmps = 2^4
 nchnls = 2
 0dbfs = 1
 
-#define TABLESIZE #128#
-#define YES  #1#
+#include "udo/tanh_synths.udo"
+#include "udo/harmonic_ceiling.udo"
+#include "udo/track_pitch.udo"
 
 #define SQUARE   #0#
 #define SAW      #1#
 #define TRIANGLE #2#
 
 gkWaveformSelector init $TRIANGLE.
+
 giSine ftgen 8, 0, 8192, 10, 1
-
-opcode TanhApply, a, ka
-  ain, kHarmonics   xin
-  asig = tanh(kHarmonics* $M_2_PI. * ain)
-  aout balance asig, ain
-  xout aout
-endop
-
-opcode SquareWaveGenerator, a, kki
-	kTrackedFrequency, kHarmonics, iSineTable xin
-	aSine poscil3 1, kTrackedFrequency, iSineTable
-	aSquare TanhApply kHarmonics, aSine
-	xout aSquare
-endop
-
-
-opcode SawtoothWaveGenerator,a, kki
-	kTrackedFrequency, kHarmonics, iSineTable xin
-	aSine poscil3 1, kTrackedFrequency, iSineTable
-	aSquare TanhApply kHarmonics, aSine
-	aCosine poscil3 1, kTrackedFrequency, giSine, .25
-  aSawTooth = aSquare * aCosine
-  xout aSawTooth
-endop
-
-
-opcode TriangleWaveGenerator, a, kki
-	kTrackedFrequency, kHarmonics, iSineTable xin
-	aSine poscil3 1, kTrackedFrequency, iSineTable
-	aSquare TanhApply kHarmonics, aSine
-	aCosine poscil3 1, kTrackedFrequency, giSine, .25
-  aSawTooth = aSquare * aCosine
-	aTriangle TanhApply kHarmonics, aSawTooth * (aCosine - 1) * (aCosine + 1)
-  xout aTriangle
-endop
-
-opcode HarmonicCeiling, k, k
-	kTrackedFrequency xin
-
-	; CALCULATE HARMONICS
-  kHarmonics = (sr * 0.5) / kTrackedFrequency
-  kHarmonicsScalar = 1
-  kHarmonics = kHarmonics* kHarmonicsScalar
-
-	xout kHarmonics
-endop
-
-opcode TrackPitch, k, a
-	aInput xin
-
-	; TRACK PITCH
-	iHopSize = 1024
-	iPeaks = 80
-  kTrackedFrequency, kamp ptrack aInput, iHopSize, iPeaks
-
-	; SMOOTH TRACKED PITCH
-  iSlideTime = 0.1 ; seconds
-  kTrackedFrequency portk kTrackedFrequency, iSlideTime
-
-	xout kTrackedFrequency
-endop
 
 turnon 1
 instr 1
@@ -108,8 +49,6 @@ i 1 0 340000
 </CsScore>
 </CsoundSynthesizer>
 
-
-
 <bsbPanel>
  <label>Widgets</label>
  <objectName/>
@@ -124,7 +63,7 @@ i 1 0 340000
   <g>46</g>
   <b>255</b>
  </bgcolor>
- <bsbObject version="2" type="BSBVSlider">
+ <bsbObject type="BSBVSlider" version="2">
   <objectName>slider1</objectName>
   <x>5</x>
   <y>5</y>
@@ -142,7 +81,7 @@ i 1 0 340000
   <resolution>-1.00000000</resolution>
   <randomizable group="0">false</randomizable>
  </bsbObject>
- <bsbObject version="2" type="BSBScope">
+ <bsbObject type="BSBScope" version="2">
   <objectName/>
   <x>99</x>
   <y>260</y>
@@ -160,7 +99,7 @@ i 1 0 340000
   <dispy>1.00000000</dispy>
   <mode>0.00000000</mode>
  </bsbObject>
- <bsbObject version="2" type="BSBHSlider">
+ <bsbObject type="BSBHSlider" version="2">
   <objectName>gkWaveformSelector</objectName>
   <x>113</x>
   <y>58</y>
