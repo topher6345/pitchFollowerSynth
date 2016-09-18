@@ -26,10 +26,7 @@ instr 1
 
   kTrackedFrequency TrackPitch aInput
 
-	; TRANSPOSE PITCH
-  kTrackedFrequency = kTrackedFrequency * 0.5
-
-  kHarmonics HarmonicCeiling kTrackedFrequency
+  kHarmonics HarmonicCeiling kTrackedFrequency * 0.5
 
   if(gkWaveformSelector == $SQUARE) then
 		aOut SquareWaveGenerator kTrackedFrequency, kHarmonics, giSine
@@ -49,6 +46,7 @@ i 1 0 340000
 </CsScore>
 </CsoundSynthesizer>
 
+
 <bsbPanel>
  <label>Widgets</label>
  <objectName/>
@@ -59,11 +57,11 @@ i 1 0 340000
  <visible>true</visible>
  <uuid/>
  <bgcolor mode="nobackground">
-  <r>231</r>
-  <g>46</g>
+  <r>247</r>
+  <g>249</g>
   <b>255</b>
  </bgcolor>
- <bsbObject type="BSBVSlider" version="2">
+ <bsbObject version="2" type="BSBVSlider">
   <objectName>slider1</objectName>
   <x>5</x>
   <y>5</y>
@@ -81,25 +79,7 @@ i 1 0 340000
   <resolution>-1.00000000</resolution>
   <randomizable group="0">false</randomizable>
  </bsbObject>
- <bsbObject type="BSBScope" version="2">
-  <objectName/>
-  <x>99</x>
-  <y>260</y>
-  <width>350</width>
-  <height>150</height>
-  <uuid>{bf2e44f8-aef0-4b59-8474-a9f218c533af}</uuid>
-  <visible>true</visible>
-  <midichan>0</midichan>
-  <midicc>0</midicc>
-  <value>-255.00000000</value>
-  <type>scope</type>
-  <zoomx>2.00000000</zoomx>
-  <zoomy>1.00000000</zoomy>
-  <dispx>1.00000000</dispx>
-  <dispy>1.00000000</dispy>
-  <mode>0.00000000</mode>
- </bsbObject>
- <bsbObject type="BSBHSlider" version="2">
+ <bsbObject version="2" type="BSBHSlider">
   <objectName>gkWaveformSelector</objectName>
   <x>113</x>
   <y>58</y>
