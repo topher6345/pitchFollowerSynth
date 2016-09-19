@@ -1,6 +1,3 @@
-
-
-
 <CsoundSynthesizer>
 <CsInstruments>
 
@@ -30,7 +27,7 @@ instr 1
   kTrackedFrequency TrackPitch aInputLP
 
 	kTrackedFrequency = kTrackedFrequency * 0.5
-  kHarmonics HarmonicCeiling kTrackedFrequency 
+  kHarmonics HarmonicCeiling kTrackedFrequency
 
 	gkWaveformSelector invalue "slider1"
  if(gkWaveformSelector == $SQUARE) then
@@ -47,22 +44,9 @@ endin
 
 </CsInstruments>
 <CsScore>
-i 1 0 340000 
- 
- 
- 
- 
- 
- 
- 
- 
- </CsScore>
+i 1 0 340000
+</CsScore>
 </CsoundSynthesizer>
-
-
-
-
-
 
 <bsbPanel>
  <label>Widgets</label>
