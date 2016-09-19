@@ -1,0 +1,11 @@
+#! /bin/bash
+CSOUND_EXISTS= csound_loc="$(type -p csound)" || [ -z "$csound_loc" ];
+if ! $CSOUND_EXISTS; then
+  echo "Looks like you don't have Csound installed."
+  echo "try:"
+  echo "brew update && brew install csound"
+  exit 1
+fi
+
+echo "Looks like you have Csound installed."
+echo "You have satisfied all the dependecies to use this project."
