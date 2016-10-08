@@ -1,0 +1,4 @@
+#! /bin/bash
+
+# Launch distortionSynth with default command line arguments
+csound -M 0 -odac distortionSynth.csd
