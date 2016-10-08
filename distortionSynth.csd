@@ -1,64 +1,88 @@
 <CsoundSynthesizer>
+<CsOptions>
+; -M 0 -odac ; Default command line options
+</CsOptions>
 <CsInstruments>
 
+; Sample Rate
 sr = 44100
+
+; Samples per control rate
 ksmps = 2^4
+
+; Number of channels
 nchnls = 2
+
+; Amplitude values of 1 are full scale (loudest)
 0dbfs = 1
 
+; Import synthesis user-defined opcodes
 #include "udo/tanh_synths.udo"
-#include "udo/harmonic_ceiling.udo"
-#include "udo/track_pitch.udo"
 
+; Import user-defined-opcode for calculating harmonics
+#include "udo/harmonic_ceiling.udo"
+
+; Define aliases for waveforms
 #define SQUARE   #0#
 #define SAW      #1#
 #define TRIANGLE #2#
 
+; Start with this wave
 gkWaveformSelector init $SAW.
 
+; Generate Sine wave table to be used by oscillators
 giSine ftgen 8, 0, 8192, 10, 1
 
 instr 1
-	kPitch cpsmidib 2
- 	iamp ampmidi 1
+  ; Receive pitch from midi keyboard
+  kPitch cpsmidib 2
 
-	ares mxadsr 0.010, 0.75, 0.1, 0.10
-	aresb mxadsr 0.004, 0.25, 0.1, 0.040
+  ; Receive midi velocity and scale to full scale
+  iamp ampmidi 1
 
-	kharms = (sr*.5)/kPitch
+  ; Amplitude envelope
+  aAmplitudeEnvelope mxadsr 0.010, 0.75, 0.1, 0.10
 
+  ; Harmonics envelope with slightly faster decay
+  aHarmonicsEnvelope mxadsr 0.004, 0.25, 0.1, 0.040
+
+  ; Calculate how many harmonics we get before aliasing
+  kHarmonics HarmonicCeiling kPitch
+
+  ; convert i-rate MIDI amplitude to k-rate
   kharmsScalar = iamp
-  kSineK oscili 0.2, 2, giSine
-  kharms = kharms * kharmsScalar * (aresb - 2)
 
-;  gkWaveformSelector invalue "gkWaveformSelector"
+  ; Add sine modulation to haromnics
+  kSineK oscili 0.2, 2, giSine
+
+  ; Bipolar to Unipolar conversion
+  kSineK = ((kSineK + 1) * 0.5)
+
+  ; Scale harmonics to get final value that controls brightness of timbre
+  kHarmonics = kHarmonics * kharmsScalar * (aHarmonicsEnvelope - 2) * kSineK
+
+  ; Route control signals to signal generators
   if(gkWaveformSelector == $SQUARE) then
-    aOut SquareWaveGenerator kPitch, kharms, giSine
+    aOut SquareWaveGenerator kPitch, kHarmonics, giSine
   elseif(gkWaveformSelector == $SAW) then
-   aOut SawtoothWaveGenerator kPitch, kharms, giSine
+   aOut SawtoothWaveGenerator kPitch, kHarmonics, giSine
   elseif(gkWaveformSelector == $TRIANGLE) then
-   aOut TriangleWaveGenerator kPitch, kharms, giSine
+   aOut TriangleWaveGenerator kPitch, kHarmonics, giSine
   endif
 
-		aOut = aOut * ares
-		aOut = aOut * 0.001 ; wow hot
-		
-	 kthresh = 0
-  kloknee = 40
-  khiknee = 60
-  kratio  = 4
-  katt    = 0.010
-  krel    = .005
-  ilook   = 1
-;aOut  compress aOut, aOut, kthresh, kloknee, khiknee, kratio, katt, krel, ilook	; voice-activated compress
+  ; Magic number to lower volume
+  iAmplitudeScalar = 0.001
 
+  ; Apply final scaling to signal
+  aOut = aOut * aAmplitudeEnvelope * iAmplitudeScalar
+
+  ; Send signal to digital to audio converter
   outs aOut , aOut
 endin
 
 </CsInstruments>
 <CsScore>
 f0 10000
-
 </CsScore>
 </CsoundSynthesizer>
 <bsbPanel>
