@@ -4,16 +4,16 @@
 </CsOptions>
 <CsInstruments>
 
-; Sample Rate
+; Set sample Rate
 sr = 44100
 
-; Samples per control rate
+; Set samples per control rate
 ksmps = 2^4
 
-; Number of channels
+; Set number of audio output channels
 nchnls = 2
 
-; Amplitude values of 1 are full scale (loudest)
+; Set Amplitude values of 1 to be full scale (loudest)
 0dbfs = 1
 
 ; Import synthesis user-defined opcodes
@@ -46,7 +46,7 @@ instr 1
   ; Harmonics envelope with slightly faster decay
   aHarmonicsEnvelope mxadsr 0.004, 0.25, 0.1, 0.040
 
-  ; Calculate how many harmonics we get before aliasing
+  ; Calculate how many harmonics we can get before aliasing
   kHarmonics HarmonicCeiling kPitch
 
   ; convert i-rate MIDI amplitude to k-rate
@@ -61,7 +61,7 @@ instr 1
   ; Scale harmonics to get final value that controls brightness of timbre
   kHarmonics = kHarmonics * kharmsScalar * (aHarmonicsEnvelope - 2) * kSineK
 
-  ; Route control signals to signal generators
+  ; Route control signals to audio signal generators
   if(gkWaveformSelector == $SQUARE) then
     aOut SquareWaveGenerator kPitch, kHarmonics, giSine
   elseif(gkWaveformSelector == $SAW) then

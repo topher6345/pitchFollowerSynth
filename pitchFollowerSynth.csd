@@ -1,35 +1,56 @@
 <CsoundSynthesizer>
 <CsInstruments>
 
+; Set sample Rate
 sr = 44100
+
+; Set samples per control rate
 ksmps = 2^4
+
+; Set number of audio output channels
 nchnls = 2
+
+; Set Amplitude values of 1 to be full scale (loudest)
 0dbfs = 1
 
+; Import synthesis user-defined opcodes
 #include "udo/tanh_synths.udo"
+
+; Import user-defined-opcode for calculating harmonics
 #include "udo/harmonic_ceiling.udo"
+
+; Import user-defined-opcode for tracking the pitch of an audio signal
 #include "udo/track_pitch.udo"
 
+; Define aliases for waveforms
 #define SQUARE   #0#
 #define SAW      #1#
 #define TRIANGLE #2#
 
+; Start with this wave
 gkWaveformSelector init $SQUARE.
 
+; Generate Sine wave table to be used by oscillators
 giSine ftgen 8, 0, 8192, 10, 1
 
 turnon 1
 instr 1
+  ; Receive audio from input channel
   aInput inch 1
 
+  ; Filter input audio to avoid noise and emphasize fundamental
 	aInputLP butlp aInput, 200
 
+  ; Estimate the frequency of the audio signal
   kTrackedFrequency TrackPitch aInputLP
 
+  ; Transpose frequency
 	kTrackedFrequency = kTrackedFrequency * 0.5
+
+  ; Calculate how many harmonics we can get before aliasing
   kHarmonics HarmonicCeiling kTrackedFrequency
 
-	gkWaveformSelector invalue "slider1"
+; Route control signals to audio signal generators
  if(gkWaveformSelector == $SQUARE) then
 		aOut SquareWaveGenerator kTrackedFrequency, kHarmonics, giSine
  elseif(gkWaveformSelector == $SAW) then
@@ -38,7 +59,10 @@ instr 1
    aOut TriangleWaveGenerator kTrackedFrequency, kHarmonics, giSine
  endif
 
+ ; adjust synthesizer singal to the volume of the input signal
  aOut balance aOut, aInput
+
+ ; Send signal to digital to audio converter
  outs aOut , aOut
 endin
 

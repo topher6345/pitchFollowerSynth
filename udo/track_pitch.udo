@@ -1,15 +1,15 @@
+; TrackPitch
+; ----------
+; Track the pitch of an audio signal
+; usage:
+;     kTrackedFrequency TrackPitch aInput
 opcode TrackPitch, k, a
   aInput xin
-
-  ; TRACK PITCH
-  ; iHopSize = 2048
-  ; iPeaks = 20
-  ; kTrackedFrequency, kamp ptrack aInput, iHopSize, iPeaks
-  iMinimumPitch = 40
-  iMaximumPitch = 2000
+  iMinimumPitch = 40 ; hz
+  iMaximumPitch = 2000 ; hz
   kTrackedFrequency, krms pitchamdf aInput, iMinimumPitch, iMaximumPitch
 
-  ; SMOOTH TRACKED PITCH
+  ; apply portamento to pitch
   iSlideTime = 0.001 ; seconds
   kTrackedFrequency portk kTrackedFrequency, iSlideTime
 
