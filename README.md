@@ -5,6 +5,7 @@ Quick Start
 
 `bin/setup`
 
-`bin/open` to open in CsoundQt
 
-`bin/open` to run distortionSynth
+`bin/ds` to run distortionSynth
+
+`bin/pf` to run pitchFollowerSynth

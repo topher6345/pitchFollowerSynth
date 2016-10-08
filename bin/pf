@@ -1,0 +1,4 @@
+#! /bin/bash
+
+# Launch pitchFollowerSynth with default command line arguments
+csound -idac -odac pitchFollowerSynth.csd
