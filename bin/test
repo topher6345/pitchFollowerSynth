@@ -1,2 +1,3 @@
 #! /bin/bash
 csound --syntax-check-only PitchFollowerSynth.csd
+csound --syntax-check-only distortionSynth.csd
